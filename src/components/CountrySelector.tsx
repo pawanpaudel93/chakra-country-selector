@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
   FormControl,
@@ -25,6 +25,9 @@ export interface CountrySelectorProps {
   selectedValue: SelectMenuOption;
 }
 
+const getFlagUrl = (countryCode: string) =>
+  `https://purecatamphetamine.github.io/country-flag-icons/3x2/${countryCode}.svg`;
+
 export default function CountrySelector({
   id,
   open,
@@ -34,25 +37,38 @@ export default function CountrySelector({
   selectedValue,
 }: CountrySelectorProps) {
   const ref = useRef<HTMLDivElement>(null);
+  const [query, setQuery] = useState("");
   const borderColor = useColorModeValue("gray.200", "whiteAlpha.300");
+  const bgColor = useColorModeValue("white", "gray.800");
+  const listItemBgColor = useColorModeValue("gray.50", "gray.700");
+  const scrollBgColor = useColorModeValue("gray.100", "gray.700");
+  const scrollThumbBgColor = useColorModeValue("gray.300", "gray.500");
+  const scrollThumbHoverActiveBgColor = useColorModeValue(
+    "gray.600",
+    "gray.400"
+  );
+  const scrollTrackBgColor = useColorModeValue("gray.200", "gray.900");
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleClickOutside = (event: any) => {
+    if (ref.current && !ref.current.contains(event.target) && open) {
+      onToggle();
+      setQuery("");
+    }
+  };
+
+  const filteredCountries = useMemo(() => {
+    const regex = new RegExp(`^${query}`, "i");
+    return COUNTRIES.filter((country) => country.title.match(regex));
+  }, [query]);
 
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const handleClickOutside = (event: any) => {
-      if (ref.current && !ref.current.contains(event.target) && open) {
-        onToggle();
-        setQuery("");
-      }
-    };
-
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref]);
-
-  const [query, setQuery] = useState("");
 
   return (
     <Box ref={ref} position="relative">
@@ -72,7 +88,7 @@ export default function CountrySelector({
           <InputLeftElement width="3.5rem">
             <Image
               alt={`${selectedValue.value}`}
-              src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${selectedValue.value}.svg`}
+              src={getFlagUrl(selectedValue.value)}
               borderRadius="sm"
               rounded="sm"
               height={4}
@@ -96,28 +112,20 @@ export default function CountrySelector({
                 viewBox="0 0 20 20"
                 fill="currentColor"
                 aria-hidden="true"
-                style={{ display: open ? "none" : "inline-block" }}
               >
-                <path
-                  fillRule="evenodd"
-                  d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
-                  clipRule="evenodd"
-                />
-              </svg>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                height={20}
-                width={20}
-                viewBox="0 0 20 20"
-                fill="currentColor"
-                aria-hidden="true"
-                style={{ display: open ? "inline-block" : "none" }}
-              >
-                <path
-                  fillRule="evenodd"
-                  d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                  clipRule="evenodd"
-                />
+                {open ? (
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                ) : (
+                  <path
+                    fillRule="evenodd"
+                    d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"
+                    clipRule="evenodd"
+                  />
+                )}
               </svg>
             </Box>
           </InputRightElement>
@@ -135,7 +143,6 @@ export default function CountrySelector({
               position: "absolute",
               marginTop: "1",
               width: "100%",
-              backgroundColor: "white",
               boxShadow: "lg",
               maxHeight: "80",
               borderRadius: "md",
@@ -147,7 +154,12 @@ export default function CountrySelector({
             aria-labelledby="listbox-label"
             aria-activedescendant="listbox-option-3"
           >
-            <List border="1px" borderColor="gray.300" roundedBottom="sm">
+            <List
+              border="1px"
+              borderColor="gray.300"
+              roundedBottom="sm"
+              backgroundColor={bgColor}
+            >
               <ListItem py="2" px="3">
                 <InputGroup>
                   <Input
@@ -169,17 +181,17 @@ export default function CountrySelector({
                 sx={{
                   "&::-webkit-scrollbar": {
                     width: "4px",
-                    backgroundColor: "gray.100",
+                    backgroundColor: scrollBgColor,
                   },
                   "&::-webkit-scrollbar-thumb": {
-                    backgroundColor: "gray.300",
+                    backgroundColor: scrollThumbBgColor,
                     borderRadius: "full",
                   },
                   "&::-webkit-scrollbar-thumb:hover": {
-                    backgroundColor: "gray.600",
+                    backgroundColor: scrollThumbHoverActiveBgColor,
                   },
                   "&::-webkit-scrollbar-thumb:active": {
-                    backgroundColor: "gray.600",
+                    backgroundColor: scrollThumbHoverActiveBgColor,
                   },
                   "&::-webkit-scrollbar-thumb:vertical": {
                     borderRadius: "full",
@@ -189,19 +201,16 @@ export default function CountrySelector({
                   },
                   "&::-webkit-scrollbar-track": {
                     borderRadius: "full",
+                    backgroundColor: scrollTrackBgColor,
                   },
                 }}
               >
-                {COUNTRIES.filter((country) =>
-                  country.title.toLowerCase().startsWith(query.toLowerCase())
-                ).length === 0 ? (
+                {filteredCountries.length === 0 ? (
                   <ListItem py="2" pl="3" pr="9">
                     No countries found
                   </ListItem>
                 ) : (
-                  COUNTRIES.filter((country) =>
-                    country.title.toLowerCase().startsWith(query.toLowerCase())
-                  ).map((value, index) => {
+                  filteredCountries.map((value, index) => {
                     return (
                       <ListItem
                         key={`${id}-${index}`}
@@ -211,7 +220,7 @@ export default function CountrySelector({
                         display="flex"
                         alignItems="center"
                         _hover={{
-                          bg: "gray.50",
+                          bg: listItemBgColor,
                           transition: "background 0.2s",
                         }}
                         role="option"
@@ -224,7 +233,7 @@ export default function CountrySelector({
                       >
                         <Image
                           alt={`${value.value}`}
-                          src={`https://purecatamphetamine.github.io/country-flag-icons/3x2/${value.value}.svg`}
+                          src={getFlagUrl(value.value)}
                           borderRadius="sm"
                           height={4}
                           mr={2}
