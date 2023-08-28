@@ -1,6 +1,8 @@
 # React Chakra Country Selector
 
-![Chakra Country Picker](public/picker.png)
+<div align="center">
+  <img src="public/picker.png" alt="Chakra Selector" width="300" height="auto">
+</div>
 
 This repository is a port of the [Country Picker](https://github.com/driaug/country-picker) component.
 
