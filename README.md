@@ -1,27 +1,62 @@
-# React + TypeScript + Vite
+# React Chakra Country Selector
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+![Chakra Country Picker](public/picker.png)
 
-Currently, two official plugins are available:
+This repository is a port of the [Country Picker](https://github.com/driaug/country-picker) component.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Requirements
 
-## Expanding the ESLint configuration
+- [Chakra UI](https://chakra-ui.com/)
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## Usage
 
-- Configure the top-level `parserOptions` property like this:
+After installing the dependencies. Copy the selector, countries and types to your own project from `src/lib` and `src/components`.
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
+```tsx
+import { useState } from "react";
+import { SelectMenuOption } from "@/lib/types";
+import { COUNTRIES } from "@/lib/countries";
+import CountrySelector from "@/components/CountrySelector";
+
+const myPage = () => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [country, setCountry] = useState<SelectMenuOption>({
+    title: "Nepal",
+    value: "NP",
+  });
+
+  return (
+   <CountrySelector
+      id="country-selector"
+      open={isOpen}
+      onToggle={() => setIsOpen(!isOpen)}
+      onChange={(country) => {
+      setCountry(country);
+      }}
+      selectedValue={
+      COUNTRIES.find(
+         (option) => option.value === country.value
+      ) as SelectMenuOption
+      }
+   />
+  );
+}
 ```
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+## Author
+
+👤 **Pawan Paudel**
+
+- Github: [@pawanpaudel93](https://github.com/pawanpaudel93)
+
+## 🤝 Contributing
+
+Contributions, issues and feature requests are welcome! \ Feel free to check [issues page](https://github.com/pawanpaudel93/chakra-country-picker/issues).
+
+## Show your support
+
+Give a ⭐️ if this project helped you!
+
+## Credits
+
+This repository is a port of the [Country Picker](https://github.com/driaug/country-picker) repository by [Dries Augustyns](https://github.com/driaug).

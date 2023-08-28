@@ -6,8 +6,6 @@ import CountrySelector from "@/components/CountrySelector";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
-  const [countryCode, setCountryCode] =
-    useState<SelectMenuOption["value"]>("NP");
   const [country, setCountry] = useState<SelectMenuOption>({
     title: "Nepal",
     value: "NP",
@@ -28,11 +26,10 @@ function App() {
           onToggle={() => setIsOpen(!isOpen)}
           onChange={(country) => {
             setCountry(country);
-            setCountryCode(country.value);
           }}
           selectedValue={
             COUNTRIES.find(
-              (option) => option.value === countryCode
+              (option) => option.value === country.value
             ) as SelectMenuOption
           }
         />
